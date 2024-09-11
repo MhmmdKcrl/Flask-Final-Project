@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+
 {% block title %} Shop {% endblock %}
+
 {% block content %}
-<!-- Page Header Start -->
+    <!-- Page Header Start -->
     <div class="container-fluid bg-secondary mb-5">
       <div
         class="d-flex flex-column align-items-center justify-content-center"
@@ -24,9 +26,7 @@
         <div class="col-lg-3 col-md-12">
           <h5 class="font-weight-semi-bold mb-4">Filter by Category</h5>
           {% for i in categories %}
-          <a href="" class="nav-item nav-link">{{i.title}} {{i.products|length}}</a> 
-          <!-- <a href="" class="nav-item nav-link">{{i.title}} {{i.count}}</a>  -->
-
+          <a href="{{url_for('shop')}}{% if not request.args.get('category') %}?category={{i.id}}{% else %}{% endif %}" class="nav-item nav-link">{{i.name}}    <span> ({{i.products|length}})</span> </a>
           {% endfor %}
         </div>
         <!-- Shop Sidebar End -->
@@ -37,18 +37,20 @@
             {% for i in products %}
             <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
               <div class="card product-item border-0 mb-4">
-                <div
-                  class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-                >
-                  <img class="img-fluid w-100" src="{{i.image}}" alt="" />
+                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0" >
+                  <img class="img-fluid w-100" src="{{ url_for('static', filename= i.image )}}" alt="" />
                 </div>
                 <div
                   class="card-body border-left border-right text-center p-0 pt-4 pb-3"
                 >
                   <h6 class="text-truncate mb-3">{{i.name}}</h6>
                   <div class="d-flex justify-content-center">
+                    {% if i.discounted_price %}
+                    <h6>${{i.discounted_price}}</h6>
+                    <h6 class="text-muted ml-2"><del>${{i.price}}</del></h6>
+                    {% else %}
                     <h6>${{i.price}}</h6>
-                    <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
+                    {% endif %}
                   </div>
                 </div>
                 <div
@@ -60,9 +62,7 @@
                 </div>
               </div>
             </div>
-  {% endfor %}
-            
-
+            {% endfor %}
             <div class="col-12 pb-1">
               <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center mb-3">

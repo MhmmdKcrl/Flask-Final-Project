@@ -1,38 +1,31 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-
+from flask import Flask, render_template, request, redirect, url_for
 
 from app import app
+
 from models import Category, Product
 
 
 @app.route('/')
-def index():
-    products = Product.query.all()
+def shop():
     categories = Category.query.all()
+    products = Product.query.all()
 
-    cat_ids =  request.args.get('cat')
-    if cat_ids:
+    for i in products:
+        print(i.image)
+
+    cat = request.args.get('category')
+    if cat:
+        cat_list = cat.split(',')
+        cat_list = [int(i) for i in cat_list]
         products = []
-        cat_ids = cat_ids.split(',')
+        for i in cat_list:
+            products += Product.query.filter_by(category_id=i).all()
 
-        for i in categories:
-            categories = Category.query.filter_by(parent_id=i.id).all()
-            product = Product.query.filter_by(category_id=i.id).all()
-            products.extend(product)
-            i.count = len(product)
-            if i.children:
-                for j in i.children:
-                    product = Product.query.filter_by(category_id=j.id).all()
-                    products.extend(product)
-                i.count = len(products)
-        
+        # products = Product.query.filter(Product.category_id.in_(cat_list)).all()
 
-                
-        
     context = {
-        'products': products,
-        'categories': categories
+        'categories': categories,
+        'products': products
     }
     return render_template('shop.html', **context)
-
 
